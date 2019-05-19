@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="container">
+      <header>
+        <h1>
+          WASM test
+          <div class="spinner"></div>
+        </h1>
+      </header>
+
+      <a href="#">Look at the console </a>
+
+      <footer>
+        Created by Digaly
+      </footer>
+    </div>
+
+    <script src="jquery-3.4.1.min.js"></script>
+    <script>
+      var importObject = {};
+      var $spinner = $(".spinner");
+
+      function fibjs(num) {
+        if (num <= 1) return 1;
+        return fibjs(num - 1) + fibjs(num - 2);
+      }
+
+      WebAssembly.instantiateStreaming(
+        fetch("wasm/optimized.wasm"),
+        importObject
+      ).then(results => {
+        $spinner.hide();
+
+        setTimeout(() => {
+          const wa = results.instance.exports;
+
+          console.log(wa.multiply(2, 5));
+          console.log(wa.add(8, 10));
+
+          console.log(wa.getAnalytics());
+
+          console.log("Fibonacci (non-cached) of 35");
+
+          const tries = 10;
+          let wasmTime = 0;
+          for (var i = 0; i < tries; i++) {
+            const now = new Date();
+            wa.fib(35);
+            wasmTime += new Date() - now;
+          }
+          wasmTime = wasmTime / tries;
+          console.log("Wasm took: " + wasmTime);
+
+
+          let jsTime = 0; 
+          for (var i = 0; i < tries; i++) {
+            const now = new Date();
+            fibjs(35);
+            jsTime += new Date() - now;
+          }
+          jsTime = jsTime / tries;
+          console.log("JS took: " + jsTime);
+
+          console.log("WASM/JS: " + (wasmTime / jsTime * 100));
+        });
+      });
+    </script>
+  </body>
+</html>

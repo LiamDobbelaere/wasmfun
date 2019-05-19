@@ -1,0 +1,21 @@
+{
+  "name": "wasmfun",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "asbuild:untouched": "asc assembly/index.ts -b public/wasm/untouched.wasm -t public/wasm/untouched.wat --sourceMap --validate --debug",
+    "asbuild:optimized": "asc assembly/index.ts -b public/wasm/optimized.wasm -t public/wasm/optimized.wat --sourceMap --validate --optimize",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
+    "start": "npm run asbuild:optimized && node webserver"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "assemblyscript": "github:AssemblyScript/assemblyscript"
+  },
+  "dependencies": {
+    "express": "^4.17.0"
+  }
+}
